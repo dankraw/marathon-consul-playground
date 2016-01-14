@@ -8,8 +8,8 @@ It creates a virtual machine with [mesos](http://mesos.apache.org/), [marathon](
 
 ## Requirements
 
-* Vagrant (1.7+)
-* VirtualBox (4.0.x, 4.1.x, 4.2.x, 4.3.x, 5.0.x)
+* [Vagrant](https://www.vagrantup.com/) (1.7+)
+* [VirtualBox](https://www.virtualbox.org/) (4.0.x, 4.1.x, 4.2.x, 4.3.x, 5.0.x)
 
 ## Usage
 
