@@ -50,14 +50,16 @@ Create an application in Marathon by sending a `PUT` request to `10.10.10.10:808
 		"ignoreHttp1xx": false
 	}],
 	"labels": {
-		"consul": "true"
+		"consul": "myCustomServiceName"
 	}
 }]
 ```
 
+> If you want your registered service name to be the same as Marathon application name, pass empty string as the value of "consul" label
+
 Example using `curl`:
 ```bash
-curl -s -X PUT -H "Content-Type: application/json" http://10.10.10.10:8080/v2/apps -d '[{"id":"/myapp","cmd":"python -m SimpleHTTPServer $PORT0","instances":1,"cpus":0.1,"mem":16,"disk":0,"executor":"","ports":[0],"healthChecks":[{"path":"/","protocol":"HTTP","portIndex":0,"gracePeriodSeconds":300,"intervalSeconds":60,"timeoutSeconds":20,"maxConsecutiveFailures":3,"ignoreHttp1xx":false}],"labels":{"consul":"true"}}]' | python -m json.tool
+curl -s -X PUT -H "Content-Type: application/json" http://10.10.10.10:8080/v2/apps -d '[{"id":"/myapp","cmd":"python -m SimpleHTTPServer $PORT0","instances":1,"cpus":0.1,"mem":16,"disk":0,"executor":"","ports":[0],"healthChecks":[{"path":"/","protocol":"HTTP","portIndex":0,"gracePeriodSeconds":300,"intervalSeconds":60,"timeoutSeconds":20,"maxConsecutiveFailures":3,"ignoreHttp1xx":false}],"labels":{"consul":"myCustomServiceName"}}]' | python -m json.tool
 ```
 ```js
 {
@@ -92,7 +94,7 @@ curl -s 10.10.10.10:8500/v1/agent/services | python -m json.tool
         "ID": "myapp.cc533052-b9f8-11e5-9fc0-080027fcad58",
         "ModifyIndex": 0,
         "Port": 31867,
-        "Service": "myapp",
+        "Service": "myCustomServiceName",
         "Tags": [
             "marathon"
         ]
