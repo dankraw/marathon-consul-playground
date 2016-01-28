@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
 
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "ubuntu/vivid64"
   config.vm.network "private_network", ip: "10.10.10.10"
   config.vm.hostname = "marathon-consul"
   config.vm.provider "virtualbox" do |vb|
@@ -28,13 +28,8 @@ Vagrant.configure(2) do |config|
     sudo tee /etc/apt/sources.list.d/mesosphere.list
   echo "deb http://dl.bintray.com/v1/content/allegro/deb /" | \
     sudo tee /etc/apt/sources.list.d/marathon-consul.list
-  sudo add-apt-repository ppa:webupd8team/java
   sudo apt-get -y update
-
-  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-  sudo apt-get -qy install oracle-java8-set-default
-
-  sudo apt-get -qy install curl unzip zookeeper mesos marathon marathon-consul
+  sudo apt-get -qy install curl unzip openjdk-8-jdk zookeeper mesos marathon marathon-consul
 
   echo "10.10.10.10" > /etc/mesos-slave/hostname
   mkdir -p /etc/marathon/conf
@@ -44,7 +39,7 @@ Vagrant.configure(2) do |config|
   mkdir -p /usr/share/consul
   mkdir -p /etc/consul.d/server
   mkdir -p /var/consul
-  CONSUL_VERSION=0.6.1
+  CONSUL_VERSION=0.6.3
   curl -OLs https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
   unzip -o consul_${CONSUL_VERSION}_linux_amd64.zip -d /usr/local/bin && rm consul_${CONSUL_VERSION}_linux_amd64.zip
   curl -OLs https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_web_ui.zip
@@ -64,6 +59,22 @@ cat > /etc/consul.d/server/config.json <<EOF
 }
 EOF
 
+cat > /etc/systemd/system/consul.service <<EOF
+[Unit]
+Description=Consul server process
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Restart=on-failure
+ExecStart=/usr/local/bin/consul agent -config-dir /etc/consul.d/server
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 cat > /etc/init/consul.conf <<EOF
 description "Consul server process"
 
@@ -73,6 +84,22 @@ stop on runlevel [!12345]
 respawn
 
 exec consul agent -config-dir /etc/consul.d/server
+EOF
+
+cat > /etc/systemd/system/marathon-consul.service <<EOF
+[Unit]
+Description=Marathon-consul service (performs Marathon Tasks registration as Consul Services for service discovery)
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/marathon-consul --config-file=/etc/marathon-consul.d/config.json
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
 EOF
 
   service zookeeper restart
