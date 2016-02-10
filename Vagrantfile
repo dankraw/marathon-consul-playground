@@ -29,7 +29,7 @@ Vagrant.configure(2) do |config|
   echo "deb http://dl.bintray.com/v1/content/allegro/deb /" | \
     sudo tee /etc/apt/sources.list.d/marathon-consul.list
   sudo apt-get -y update
-  sudo apt-get -qy install curl unzip openjdk-8-jdk zookeeper mesos marathon marathon-consul
+  sudo apt-get -qy install curl unzip openjdk-8-jdk zookeeperd mesos marathon marathon-consul
 
   echo "10.10.10.10" > /etc/mesos-slave/hostname
   mkdir -p /etc/marathon/conf
