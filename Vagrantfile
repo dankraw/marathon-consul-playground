@@ -41,7 +41,7 @@ Vagrant.configure(2) do |config|
   mkdir -p /usr/share/consul
   mkdir -p /etc/consul.d/server
   mkdir -p /var/consul
-  CONSUL_VERSION=0.6.3
+  CONSUL_VERSION=0.7.2
   curl -OLs https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
   unzip -o consul_${CONSUL_VERSION}_linux_amd64.zip -d /usr/local/bin && rm consul_${CONSUL_VERSION}_linux_amd64.zip
   curl -OLs https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_web_ui.zip
